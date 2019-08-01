@@ -1,0 +1,14 @@
+.sidebar {
+    @apply
+        .h-full
+        .border-r;
+
+    &__items {}
+
+    &__item {
+        @apply
+            .text-medium
+            .my-3/4
+            .cursor-pointer;
+    }
+}

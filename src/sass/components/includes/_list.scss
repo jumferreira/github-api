@@ -1,0 +1,75 @@
+.users_list {
+    @apply
+        .flex
+        .h-full;
+
+    &__title { @apply .mb-1; }
+
+    &__item,
+    &__repository {
+        @apply .w-1/2;
+    }
+
+    &__item {
+        @apply
+            .flex
+            .border-r;
+
+        &__image,
+        &__info {
+            @apply .w-1/2;
+        }
+
+        &__image {
+            @apply
+                .max-w-1/3
+                .mr-2/4;
+
+            img {
+                @apply .w-full;
+            }
+        }
+
+        &__info {
+            li {
+                @apply .my-2/4;
+            }
+        }
+
+        &__followers, &__following {
+            li {
+                @apply .ml-2/4;
+
+                a { @apply .underline; }
+            }
+        }
+    }
+
+    &__repository {
+        @apply
+            .p-3/4;
+
+        &__head {
+            @apply
+                .flex
+                .mb-1;
+
+            h3 {
+                @apply .flex-grow;
+            }
+        }
+
+        &__items {
+        }
+
+        &__item {
+            @apply
+                .flex
+                .my-1/4;
+
+            span:first-child {
+                @apply .flex-grow;
+            }
+        }
+    }
+}

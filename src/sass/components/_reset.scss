@@ -1,0 +1,25 @@
+@tailwind preflight;
+
+body {
+    @apply .font-sans;
+}
+
+a {
+    @apply
+        .text-black
+        .no-underline;
+}
+
+ul {
+    padding: 0;
+    list-style: none;
+}
+
+hr {
+    @apply
+        .border-0
+        .bg-grey-lighter;
+
+    margin: .5rem 0;
+    height: 1px;
+}

@@ -1,0 +1,27 @@
+.input {
+    @apply
+        .bg-white
+        .border
+        .border-grey
+        .p-2/4;
+
+    &--full { @apply .w-full; }
+
+    &--borderless {
+        @apply
+            .border-0
+            .border-transparent;
+    }
+
+    &--grey {
+        @apply
+            .border
+            .border-grey-lighter;
+    }
+
+    &--grey-darker {
+        @apply
+            .border
+            .border-grey-darker;
+    }
+}

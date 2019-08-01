@@ -1,0 +1,22 @@
+.detail {
+    @apply .h-full;
+
+    &__title { @apply .mb-1; }
+
+    &__items {
+
+        li {
+            @apply
+                .my-1/4
+                .cursor-pointer;
+        }
+
+        &--articles {
+            li {
+                @apply
+                    .my-2/4;
+
+            }
+        }
+    }
+}
