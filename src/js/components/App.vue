@@ -203,10 +203,7 @@
 
 export default {
     data: () => ({
-        // hasResults: false,
-
         searchField: null,
-        // searchResult: null,
 
         followersList: {},
         followingList: {},
@@ -221,61 +218,6 @@ export default {
         isClearSearchActive: false,
         isLoading: false,
         isShowingInitialMessage: false,
-
-
-        // followersList: [
-        //     {
-        //         'html_url': 'https://github.com/robonilha',
-        //         'login': 'robonilha',
-        //     }
-        // ],
-
-        // followingList: [
-        //     {
-        //         'html_url': 'https://github.com/robonilha',
-        //         'login': 'robonilha',
-        //     }
-        // ],
-
-        // userResult: [
-        //     {
-        //         'avatar_url': 'https://avatars3.githubusercontent.com/u/29998176?s=460&v=4',
-        //         'login': 'jumferreira',
-        //         // 'email': 'jumferreira@teste.com',
-        //         'email': null,
-        //         'followers': 4,
-        //         'following': 3,
-        //         'bio': 'Working working working',
-        //     },
-        // ],
-
-        // repositoriesList: [
-        //     {
-        //         'name': 'jumferreira.github.io',
-        //         'stargazers_count': 8,
-        //     },
-        //     {
-        //         'name': 'newtab',
-        //         'stargazers_count': 15,
-        //     },
-        //     {
-        //         'name': 'prova',
-        //         'stargazers_count': 0,
-        //     },
-        //     {
-        //         'name': 'sparklez',
-        //         'stargazers_count': 2,
-        //     },
-        // ],
-
-        // selectedRepository: {
-        //         'name': 'jumferreira.github.io',
-        //         'stargazers_count': 4,
-        //         'description': 'hahaha',
-        //         'language': 'Vue',
-        //         'svn_url': 'https://github.com/jumferreira/newtab',
-        // },
-
     }),
 
     computed: {
@@ -290,10 +232,6 @@ export default {
         isEmptyResult () {
             return _.isEmpty(this.userResult);
         },
-
-        // isEmptyInputSearch () {
-        //     return _.isEmpty(this.searchField);
-        // },
 
         resultTitle () {
             return this.isEmptyResult ? 'Nenhum resultado encontrado. Por favor, tente outro usuário ;)' : 'Resultado da busca:';
@@ -319,7 +257,7 @@ export default {
         async getUser (userName) {
             let { data } = await axios.get(`https://api.github.com/users/${userName}`);
             this.userResult = _.clone(data);
-            console.log('getUser: ', data);
+
             this.getFollowers(userName);
             this.getFollowing(userName);
             this.getRepositories(userName);
