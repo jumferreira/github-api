@@ -1,67 +1,79 @@
 <template>
-    <div>
+    <div class="main">
         <div class="header">
             <div class="container">
                 <div class="columns items-center">
-                    <div class="column column--2">
+                    <div class="column logo_column">
                         <h1 class="header__logo">
                             <a href="https://www.astrolink.com.br/">
-                                <img class="header__image" src="https://pbs.twimg.com/profile_images/803640243106758656/rFsTi4_K_400x400.jpg" alt="">
+                                <img class="header__image" src="https://lh3.googleusercontent.com/u4HKKzyEG-trOxy0r_9EwjO6Y8QjHX3Jg4wVjNZ2oOCzkT96I1Rhbrz65VxL4qi08Q" alt="">
                             </a>
                         </h1>
                     </div>
 
                     <div class="column">
                         <div class="header__search">
-                            <input
-                                type="text"
-                                class="input input--grey-darker input--full"
-                                placeholder="Busca de usuários"
-                                v-model="searchField"
-                                @keyup="search()"
-                            >
+                            <div class="header__search-holder">
 
-                            <ul class="header__search-results" v-if="hasResults">
-                                <li
-                                    class="header__search-result"
-                                    v-for="item in searchResult"
+                                <input
+                                    type="text"
+                                    class="input input--grey-darker input--75"
+                                    placeholder="Busca de usuários"
+                                    v-model="searchField"
+                                    @keyup="search()"
                                 >
-                                    <p>Nome: {{ item.name }}</p>
-                                    <p>Usuário: {{ item.username }}</p>
-                                    <p>E-mail: {{ item.email }}</p>
-                                </li>
-                            </ul>
+
+                                <i
+                                    v-if="isClearSearchActive"
+                                    class="fas fa-times"
+                                    @click="clearSearch()"
+                                ></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <hr>
-
         <div class="body">
             <div class="container">
-                <div class="columns">
+
+                <div class="loader" v-if="isLoading"></div>
+
+                <div class="columns" v-if="!isLoading">
                     <div class="column">
-                        <h2 class="users_list__title">Resultado da busca: </h2>
+                        <h2
+                            v-if="!isLoading && !isShowingInitialMessage"
+                            class="users_list__title"
+                            v-text="resultTitle"
+                        ></h2>
 
-                        <div class="users_list">
+                        <div class="empty-message" v-if="isShowingInitialMessage && isEmptyResult">
+                            <h3>Bem vindo a busca de usuários do Github <i class="fab fa-github"></i></h3>
 
-                            <div class="users_list__item" v-for="user in usersResults">
+                            <p>Para usar o buscador é muito simples!</p>
+                            <br />
+
+                            <p>É só procurar pelo nome de usuário que deseja e os resultados vão aparecer bem aqui. Viu como é simples?</p>
+                            <p>Ah, e caso queira saber mais sobre alguma informação na tela, procure pelas palavras sublinhadas ;)</p>
+                        </div>
+
+                        <div v-else class="users_list">
+                            <div class="users_list__item">
                                 <div class="users_list__item__image">
-                                    <img :src="user.avatar_url" :alt="user.login">
+                                    <img :src="userResult.avatar_url" :alt="userResult.login">
                                 </div>
 
                                 <div class="users_list__item__info">
                                     <ul>
                                         <li>
                                             <span class="font-semibold">User: </span>
-                                            <span v-text="user.login"></span>
+                                            <span v-text="userResult.login"></span>
                                         </li>
 
                                         <li>
                                             <span class="font-semibold">
-                                                Followers ({{user.followers}}):
+                                                Followers ({{userResult.followers}}):
                                             </span>
 
                                             <ul class="users_list__item__followers">
@@ -77,7 +89,7 @@
 
                                         <li>
                                             <span class="font-semibold">
-                                                Following ({{user.following}}):
+                                                Following ({{userResult.following}}):
                                             </span>
 
                                             <ul class="users_list__item__following">
@@ -93,12 +105,12 @@
 
                                         <li>
                                             <span class="font-semibold">E-mail: </span>
-                                            <span v-text="user.email !== null ? user.email : '(E-mail privado)'"></span>
+                                            <span v-text="userResult.email ? userResult.email : '(E-mail privado)'"></span>
                                         </li>
 
                                         <li>
                                             <span class="font-semibold">Bio: </span>
-                                            <span v-text="user.bio !== null ? user.bio : '(Bio não fornecida)'"></span>
+                                            <span v-text="userResult.bio ? userResult.bio : '(Bio não fornecida)'"></span>
                                         </li>
                                     </ul>
                                 </div>
@@ -106,7 +118,7 @@
 
                             <div class="users_list__repository">
                                 <div class="users_list__repository__head">
-                                    <h3 class="">Repositórios</h3>
+                                    <h3>Repositórios</h3>
 
                                     <button @click="orderRepositories()">
                                         <i :class="`fas fa-arrow-${isArrowClicked ? 'up' : 'down'}`"></i>
@@ -118,39 +130,72 @@
                                         class="users_list__repository__item"
                                         v-for="repository in repositoriesList"
                                     >
-                                        <span v-text="repository.name"></span>
+                                        <button
+                                            @click="openRepositoryModal(userResult.login, repository.name)"
+                                            v-text="repository.name"
+                                        ></button>
 
-                                        <span v-text="repository.stargazers_count + ' star'"></span>
+                                        <span v-text="repository.stargazers_count + ' estrela(s)'"></span>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
-
-                    <!-- <div class="column">
-                        <div class="detail">
-                            <h3 class="detail__title">Repositórios</h3>
-
-                            <div v-if="isUserSelected">
-                                <strong>Nome: </strong> {{ detail.name }} <br />
-                                <strong>Usuário: </strong> {{ detail.username }} <br />
-                                <strong>E-mail: </strong> {{ detail.email }} <br />
-                                <strong>Telefone: </strong> {{ detail.phone }} <br />
-                                <strong>Empresa: </strong> {{ detail.company.name }} - {{ detail.company.catchPhrase }} <br />
-
-                            </div>
-
-                            <div v-if="isArticleSelected">
-                                <strong>Titulo: </strong> {{ detail.title }} <br />
-                                <strong>Autor: </strong> {{ getAuthor(detail.userId) }} <br />
-                                <strong>Texto: </strong> {{ detail.body }} <br />
-                            </div>
-
-                        </div>
-                    </div> -->
                 </div>
             </div>
         </div>
+
+        <modal
+            name="repositoryModal"
+            :width="320"
+            :height="220"
+        >
+            <div class="modal">
+                <div class="modal_header">
+                    <h1 class="modal_title" v-text="'Detalhes do repositório: ' + selectedRepository.name"></h1>
+
+                    <button class="modal_close" @click="closeRepositoryModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="modal_body" v-if="isRepositorySelected">
+                    <ul>
+                        <li>
+                            <span class="font-semibold">Nome: </span>
+                            <span v-text="selectedRepository.name"></span>
+                        </li>
+
+                        <li>
+                            <span class="font-semibold">Descrição: </span>
+                            <span v-text="selectedRepository.description ? selectedRepository.description : '(Descrição não fornecida)'"></span>
+                        </li>
+
+                        <li>
+                            <span class="font-semibold">Estrelas: </span>
+                            <span v-text="selectedRepository.stargazers_count + ' estrela(s)'"></span>
+                        </li>
+
+                        <li>
+                            <span class="font-semibold">Linguagem: </span>
+                            <span v-text="selectedRepository.language"></span>
+                        </li>
+
+                        <li>
+                            <br />
+                            Para mais detalhes,
+                            <a
+                                class="underline"
+                                :href="selectedRepository.svn_url"
+                                target="_blank"
+                            >
+                                clique aqui
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </modal>
     </div>
 </template>
 
@@ -158,71 +203,79 @@
 
 export default {
     data: () => ({
-        searchField: null,
-        searchResult: [],
-        list: [],
-        detail: [],
-        articlesList: [],
-        isUserSelected: false,
-        isArticleSelected: false,
-        hasResults: false,
+        // hasResults: false,
 
+        searchField: null,
+        // searchResult: null,
+
+        followersList: {},
+        followingList: {},
+        repositoriesList: {},
+        selectedRepository: {},
+        userResult: {},
 
         followersCount: 0,
         followingCount: 0,
-        // followersList: null,
-        // followingList: null,
-        // usersResults: null,
-        // repositoriesList: null,
-        // repositoriesListAsc: null,
-        // repositoriesListDesc: null,
         isArrowClicked: true,
+        isRepositorySelected: false,
+        isClearSearchActive: false,
+        isLoading: false,
+        isShowingInitialMessage: false,
 
-        followersList: [
-            {
-                'html_url': 'https://github.com/robonilha',
-                'login': 'robonilha',
-            }
-        ],
 
-        followingList: [
-            {
-                'html_url': 'https://github.com/robonilha',
-                'login': 'robonilha',
-            }
-        ],
+        // followersList: [
+        //     {
+        //         'html_url': 'https://github.com/robonilha',
+        //         'login': 'robonilha',
+        //     }
+        // ],
 
-        usersResults: [
-            {
-                'avatar_url': 'https://avatars3.githubusercontent.com/u/29998176?s=460&v=4',
-                'login': 'jumferreira',
-                // 'email': 'jumferreira@teste.com',
-                'email': null,
-                'followers': 4,
-                'following': 3,
-                'bio': 'Working working working',
-            },
-        ],
+        // followingList: [
+        //     {
+        //         'html_url': 'https://github.com/robonilha',
+        //         'login': 'robonilha',
+        //     }
+        // ],
 
-        repositoriesList: [
-            {
-                'name': 'jumferreira.github.io',
-                'stargazers_count': 8,
-            },
-            {
-                'name': 'newtab',
-                'stargazers_count': 15,
-            },
-            {
-                'name': 'prova',
-                'stargazers_count': 0,
-            },
-            {
-                'name': 'sparklez',
-                'stargazers_count': 2,
-            },
+        // userResult: [
+        //     {
+        //         'avatar_url': 'https://avatars3.githubusercontent.com/u/29998176?s=460&v=4',
+        //         'login': 'jumferreira',
+        //         // 'email': 'jumferreira@teste.com',
+        //         'email': null,
+        //         'followers': 4,
+        //         'following': 3,
+        //         'bio': 'Working working working',
+        //     },
+        // ],
 
-        ],
+        // repositoriesList: [
+        //     {
+        //         'name': 'jumferreira.github.io',
+        //         'stargazers_count': 8,
+        //     },
+        //     {
+        //         'name': 'newtab',
+        //         'stargazers_count': 15,
+        //     },
+        //     {
+        //         'name': 'prova',
+        //         'stargazers_count': 0,
+        //     },
+        //     {
+        //         'name': 'sparklez',
+        //         'stargazers_count': 2,
+        //     },
+        // ],
+
+        // selectedRepository: {
+        //         'name': 'jumferreira.github.io',
+        //         'stargazers_count': 4,
+        //         'description': 'hahaha',
+        //         'language': 'Vue',
+        //         'svn_url': 'https://github.com/jumferreira/newtab',
+        // },
+
     }),
 
     computed: {
@@ -233,51 +286,85 @@ export default {
         repositoriesListDesc () {
             return _.orderBy(this.repositoriesList, ['stargazers_count'], ['desc']);
         },
+
+        isEmptyResult () {
+            return _.isEmpty(this.userResult);
+        },
+
+        // isEmptyInputSearch () {
+        //     return _.isEmpty(this.searchField);
+        // },
+
+        resultTitle () {
+            return this.isEmptyResult ? 'Nenhum resultado encontrado. Por favor, tente outro usuário ;)' : 'Resultado da busca:';
+        },
     },
 
     methods: {
         search: _.throttle(function () {
-            this.usersList.forEach(user => {
+                this.isLoading = true;
+                this.isClearSearchActive = true;
+                this.isShowingInitialMessage = false;
 
-                if (Object.values(user).indexOf(_.upperFirst(this.searchField)) > -1) {
-                    this.searchResult.push(user);
-                    this.hasResults = true;
-                }
-            });
+            if (this.searchField.length > 4) {
+                this.isLoading = false;
+                this.getUser(this.searchField);
 
-            if(! this.searchField) {
-                this.hasResults = false;
+            } else {
+                this.isClearSearchActive = false;
+
             }
-
         }, 500),
 
-        async getUser () {
-            // let { data } = await axios.get('https://api.github.com/search/users?q=user:brurubio');
-            // let { data } = await axios.get('https://api.github.com/users/brurubio');
-            // this.usersResults = data.items;
-            this.getFollowers();
-            this.getFollowing();
-            this.getRepositories();
+        async getUser (userName) {
+            let { data } = await axios.get(`https://api.github.com/users/${userName}`);
+            this.userResult = _.clone(data);
+            console.log('getUser: ', data);
+            this.getFollowers(userName);
+            this.getFollowing(userName);
+            this.getRepositories(userName);
+
             this.repositoriesList = this.repositoriesListAsc;
-            // console.log(data);
         },
 
-        async getFollowers () {
-            // let { data } = await axios.get('https://api.github.com/users/brurubio/followers');
-            // this.followersList = data;
-            // this.followersCount = data.length;
+        async getFollowers (userName) {
+            let { data } = await axios.get(`https://api.github.com/users/${userName}/followers`);
+            this.followersList = data;
+            this.followersCount = data.length;
         },
 
-        async getFollowing () {
-            // let { data } = await axios.get('https://api.github.com/users/brurubio/following');
-            // this.followingList = data;
-            // this.followingCount = data.length;
+        async getFollowing (userName) {
+            let { data } = await axios.get(`https://api.github.com/users/${userName}/following`);
+            this.followingList = data;
+            this.followingCount = data.length;
         },
 
-        async getRepositories () {
-            // let { data } = await axios.get('https://api.github.com/users/jumferreira/repos');
-            // this.repositoriesList = data;
-            // console.log(data);
+        async getRepositories (userName) {
+            let { data } = await axios.get(`https://api.github.com/users/${userName}/repos`);
+            this.repositoriesList = data;
+        },
+
+        async getSelectedRepository (userName, repositoryName) {
+            let { data } = await axios.get(`https://api.github.com/repos/${userName}/${repositoryName}`);
+            this.selectedRepository = data;
+            this.isRepositorySelected = true;
+        },
+
+        openRepositoryModal (userName, repositoryName) {
+            this.$modal.show('repositoryModal');
+
+            this.getSelectedRepository(userName, repositoryName);
+        },
+
+        closeRepositoryModal () {
+            this.$modal.hide('repositoryModal');
+        },
+
+        clearSearch () {
+            this.searchField = null;
+            this.userResult = {};
+            this.isClearSearchActive = false;
+            this.isShowingInitialMessage = true;
         },
 
         orderRepositories () {
@@ -288,8 +375,7 @@ export default {
     },
 
     mounted() {
-        this.getUser();
-        // this.getArticles();
+        this.isShowingInitialMessage = true;
     },
 };
 </script>

@@ -1,19 +1,24 @@
 .users_list {
     @apply
         .flex
-        .h-full;
+        .flex-wrap
+        .h-full
+        .border
+        .border-grey-lighter
+        .rounded
+        .p-3/4
+        .mb-3/4;
 
     &__title { @apply .mb-1; }
 
     &__item,
     &__repository {
-        @apply .w-1/2;
+        @apply .w-full;
     }
 
     &__item {
         @apply
-            .flex
-            .border-r;
+            .flex;
 
         &__image,
         &__info {
@@ -67,9 +72,50 @@
                 .flex
                 .my-1/4;
 
-            span:first-child {
-                @apply .flex-grow;
+            button {
+                @apply
+                    .flex-grow
+                    .text-left;
             }
         }
     }
+
+    &__repo-detail {
+        @apply
+            .p-3/4;
+
+        h3 {
+            @apply .mb-1;
+        }
+
+        li {
+            @apply .my-1/4;
+        }
+    }
 }
+
+.empty-message {
+    @apply
+        .w-3/4
+        .p-1
+        .border
+        .border-dashed
+        .my-0 .mx-auto;
+}
+
+@screen md {
+    .users_list {
+        &__item,
+        &__repository { @apply .w-1/2; }
+
+        &__item {
+            @apply
+                .border-r
+                .border-grey-lighter;
+        }
+    }
+}
+
+@screen lg {}
+
+@screen xl {}

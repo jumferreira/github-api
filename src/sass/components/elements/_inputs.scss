@@ -3,9 +3,12 @@
         .bg-white
         .border
         .border-grey
-        .p-2/4;
+        .p-2/4
+        .rounded;
 
     &--full { @apply .w-full; }
+    &--75 { @apply .w-3/4; }
+    &--50 { @apply .w-1/2; }
 
     &--borderless {
         @apply
