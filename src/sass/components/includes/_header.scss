@@ -43,15 +43,15 @@
         &-result {
             @apply
                 .py-3/4
-                .px-1/4;
-
-            align-items: center;
+                .px-1/4
+                .items-center;
         }
 
         &-holder {
            @apply
                .relative
-               .w-3/4;
+               .w-full
+               .text-center;
 
             .fa-times {
                 @apply
@@ -59,7 +59,8 @@
                     .absolute;
 
                 top: 10px;
-                right: 27%;
+                // right: 27%;
+                right: 15%;
             }
         }
     }
@@ -71,6 +72,11 @@
 
 @screen md {
     .logo_column { @apply .column--2; }
+    .header__search-holder {
+        @apply
+            .w-3/4
+            .text-left;
+    }
 }
 
 @screen lg {

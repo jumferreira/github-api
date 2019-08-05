@@ -303,6 +303,12 @@ export default {
             this.userResult = {};
             this.isClearSearchActive = false;
             this.isShowingInitialMessage = true;
+
+            this.followersList = {};
+            this.followingList = {};
+            this.repositoriesList = {};
+            this.selectedRepository = {};
+            this.userResult = {};
         },
 
         orderRepositories () {
