@@ -5,8 +5,8 @@
                 <div class="columns items-center">
                     <div class="column logo_column">
                         <h1 class="header__logo">
-                            <a href="https://www.astrolink.com.br/">
-                                <img class="header__image" src="https://lh3.googleusercontent.com/u4HKKzyEG-trOxy0r_9EwjO6Y8QjHX3Jg4wVjNZ2oOCzkT96I1Rhbrz65VxL4qi08Q" alt="">
+                            <a href="#">
+                                <img class="header__image" src="https://miro.medium.com/max/4000/0*MZMl76wKo2FQLqG0.png" alt="">
                             </a>
                         </h1>
                     </div>
