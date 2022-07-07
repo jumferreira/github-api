@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "laravel-mix-purgecss": "^2.2.3",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "vue": "2.6.11",
     "vue-js-modal": "^2.0.0-rc.3"
   }
